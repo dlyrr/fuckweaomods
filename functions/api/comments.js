@@ -1,6 +1,8 @@
 // Pages Function: /api/comments
-// GET  ?before=<cursor>&limit=50  -> newest first, keyset pagination
-// POST { name, body, hp }         -> inserts, returns the created row
+// GET  ?before=<cursor>&limit=50  -> newest first, keyset pagination, public
+// POST { body, hp }               -> requires a logged in account
+
+import { currentUser, sha256Hex } from '../../lib/auth.js';
 
 // --- configurable word filter -------------------------------------------
 // Lowercase substrings. Anything matched is rejected outright.
@@ -9,7 +11,6 @@ const BLOCKED = [
 ];
 // ------------------------------------------------------------------------
 
-const NAME_MAX = 24;
 const BODY_MAX = 500;
 const PAGE_MAX = 50;
 const RATE_MS = 30000;
@@ -38,27 +39,20 @@ export const isBlocked = (text) => {
   return BLOCKED.some((w) => w && t.includes(w));
 };
 
-// Returns { name, body } on success, { error, status } on failure.
+// Returns { body } on success, { error, status } on failure.
+// The display name comes from the session, never from the payload.
 export function validate(input) {
   if (!input || typeof input !== 'object') return { error: 'malformed body', status: 400 };
   // honeypot: real browsers leave it empty
   if (typeof input.hp === 'string' && input.hp.trim() !== '') return { error: 'no', status: 400 };
 
-  let name = stripHtml(typeof input.name === 'string' ? input.name : '');
   const body = stripHtml(typeof input.body === 'string' ? input.body : '');
 
-  if (!name) name = 'anon';
-  if (name.length > NAME_MAX) return { error: 'name over ' + NAME_MAX + ' chars', status: 400 };
   if (!body) return { error: 'say something', status: 400 };
   if (body.length > BODY_MAX) return { error: 'keep it under ' + BODY_MAX + ' chars', status: 400 };
-  if (isBlocked(name) || isBlocked(body)) return { error: 'filtered', status: 400 };
+  if (isBlocked(body)) return { error: 'filtered', status: 400 };
 
-  return { name, body };
-}
-
-async function hashIp(ip, salt) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(salt + ':' + ip));
-  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
+  return { body };
 }
 
 // cursor is "<created_at>_<id>" so identical timestamps never drop a row
@@ -105,6 +99,16 @@ export async function onRequestGet({ request, env }) {
 }
 
 export async function onRequestPost({ request, env }) {
+  if (!env.IP_SALT) return json({ error: 'server misconfigured: no IP_SALT' }, 500);
+
+  let user;
+  try {
+    user = await currentUser(request, env);
+  } catch {
+    return json({ error: 'the database is about as reliable as the mods' }, 500);
+  }
+  if (!user) return json({ error: 'log in first' }, 401);
+
   let input;
   try {
     input = await request.json();
@@ -115,10 +119,8 @@ export async function onRequestPost({ request, env }) {
   const v = validate(input);
   if (v.error) return json({ error: v.error }, v.status);
 
-  if (!env.IP_SALT) return json({ error: 'server misconfigured: no IP_SALT' }, 500);
-
   const ip = request.headers.get('CF-Connecting-IP') || '0.0.0.0';
-  const ipHash = await hashIp(ip, env.IP_SALT);
+  const ipHash = await sha256Hex(env.IP_SALT + ':' + ip);
   const now = Date.now();
 
   try {
@@ -133,7 +135,7 @@ export async function onRequestPost({ request, env }) {
       return json({ error: 'slow down. ' + wait + 's', retry_after: wait }, 429);
     }
 
-    const row = { id: crypto.randomUUID(), name: v.name, body: v.body, created_at: now };
+    const row = { id: crypto.randomUUID(), name: user.name, body: v.body, created_at: now };
     await env.DB.prepare(
       'INSERT INTO comments (id, name, body, created_at, ip_hash) VALUES (?, ?, ?, ?, ?)'
     )

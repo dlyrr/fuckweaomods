@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="/style.css?v=2">
+<link rel="stylesheet" href="/style.css?v=3">
 </head>
 <body>
 <div class="bg" aria-hidden="true"></div>
@@ -42,14 +42,28 @@
   <section class="wall" id="wall">
     <h2 class="eyebrow">the wall</h2>
 
-    <form class="composer" id="composer" autocomplete="off">
-      <div class="row">
-        <input id="name" name="name" type="text" maxlength="24" placeholder="name (or leave it, you'll be anon)" aria-label="Your name">
-        <!-- honeypot: hidden from humans, irresistible to bots -->
-        <div class="hp" aria-hidden="true">
-          <label for="website">Website</label>
-          <input id="website" name="website" type="text" tabindex="-1" autocomplete="off">
-        </div>
+    <div class="gate" id="gate" hidden>
+      <div class="tabs" role="tablist">
+        <button type="button" class="tab on" id="tab-login" data-mode="login">log in</button>
+        <button type="button" class="tab" id="tab-register" data-mode="register">register</button>
+      </div>
+      <p class="gate-note" id="gate-note">Accounts exist so the wall isn't 400 rows of &ldquo;anon&rdquo;. No email, no verification, nothing to leak.</p>
+      <form id="authform" autocomplete="off">
+        <input id="uname" type="text" maxlength="24" required placeholder="username" aria-label="Username" autocomplete="username">
+        <input id="upass" type="password" maxlength="200" required placeholder="password (8+ characters)" aria-label="Password" autocomplete="current-password">
+        <button type="submit" id="authgo">log in</button>
+      </form>
+    </div>
+
+    <form class="composer" id="composer" autocomplete="off" hidden>
+      <div class="who">
+        <span>posting as <strong id="whoname"></strong></span>
+        <button type="button" class="link" id="logout">log out</button>
+      </div>
+      <!-- honeypot: hidden from humans, irresistible to bots -->
+      <div class="hp" aria-hidden="true">
+        <label for="website">Website</label>
+        <input id="website" name="website" type="text" tabindex="-1" autocomplete="off">
       </div>
       <textarea id="body" name="body" maxlength="500" rows="3" required placeholder="what did they mute you for?" aria-label="Your comment"></textarea>
       <div class="row bar">
@@ -80,6 +94,6 @@
   </article>
 </template>
 
-<script src="/app.js?v=2"></script>
+<script src="/app.js?v=3"></script>
 </body>
 </html>

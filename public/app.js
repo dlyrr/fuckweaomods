@@ -4,7 +4,13 @@
 
   const $ = (id) => document.getElementById(id);
   const form = $('composer');
-  const nameEl = $('name');
+  const gateEl = $('gate');
+  const authForm = $('authform');
+  const unameEl = $('uname');
+  const upassEl = $('upass');
+  const authGo = $('authgo');
+  const whoEl = $('whoname');
+  const logoutEl = $('logout');
   const bodyEl = $('body');
   const hpEl = $('website');
   const sendEl = $('send');
@@ -16,6 +22,7 @@
 
   let cursor = null;
   let loading = false;
+  let mode = 'login';
 
   // ---------- helpers ----------
   const MIN = 60000, HOUR = 3600000, DAY = 86400000;
@@ -107,7 +114,11 @@
     const res = await fetch(path, opts);
     let data = null;
     try { data = await res.json(); } catch { /* non-json error page */ }
-    if (!res.ok) throw new Error((data && data.error) || 'http ' + res.status);
+    if (!res.ok) {
+      const e = new Error((data && data.error) || 'http ' + res.status);
+      e.status = res.status;
+      throw e;
+    }
     return data;
   }
 
@@ -176,7 +187,7 @@
       const row = await api('/api/comments', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ name: nameEl.value, body, hp: hpEl.value }),
+        body: JSON.stringify({ body, hp: hpEl.value }),
       });
 
       const wasEmpty = listEl.querySelector('.empty');
@@ -187,6 +198,7 @@
       updateCount();
       toast('posted', true);
     } catch (err) {
+      if (err.status === 401) setUser(null);
       toast(err.message);
     } finally {
       sendEl.disabled = false;
@@ -194,7 +206,74 @@
     }
   });
 
+  // ---------- auth ----------
+  function setUser(name) {
+    const on = !!name;
+    if (on) whoEl.textContent = name;
+    form.hidden = !on;
+    gateEl.hidden = on;
+    if (on) upassEl.value = '';
+  }
+
+  function setMode(next) {
+    mode = next;
+    $('tab-login').classList.toggle('on', mode === 'login');
+    $('tab-register').classList.toggle('on', mode === 'register');
+    authGo.textContent = mode === 'login' ? 'log in' : 'create account';
+    upassEl.placeholder = mode === 'login' ? 'password' : 'password (8+ characters)';
+    upassEl.autocomplete = mode === 'login' ? 'current-password' : 'new-password';
+  }
+
+  $('tab-login').addEventListener('click', () => setMode('login'));
+  $('tab-register').addEventListener('click', () => setMode('register'));
+
+  authForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (authGo.disabled) return;
+
+    const name = unameEl.value.trim();
+    const password = upassEl.value;
+    if (!name || !password) { toast('name and password, both of them'); return; }
+
+    authGo.disabled = true;
+    const label = authGo.textContent;
+    authGo.textContent = mode === 'login' ? 'checking' : 'creating';
+
+    try {
+      const res = await api('/api/auth/' + mode, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ name, password }),
+      });
+      setUser(res.name);
+      toast(mode === 'login' ? 'welcome back' : 'account created', true);
+      bodyEl.focus();
+    } catch (err) {
+      toast(err.message);
+    } finally {
+      authGo.disabled = false;
+      authGo.textContent = label;
+    }
+  });
+
+  logoutEl.addEventListener('click', async () => {
+    try { await api('/api/auth/logout', { method: 'POST' }); } catch { /* cookie is gone either way */ }
+    setUser(null);
+    toast('logged out', true);
+  });
+
+  async function whoAmI() {
+    try {
+      const res = await api('/api/auth/me');
+      setUser(res.user ? res.user.name : null);
+    } catch {
+      setUser(null);
+    }
+  }
+
   moreEl.addEventListener('click', () => load(false));
 
+  setMode('login');
+  whoAmI();
   load(true);
 })();

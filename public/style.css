@@ -190,6 +190,68 @@ button {
 button:hover:not(:disabled) { transform: translateY(-1px); }
 button:disabled { opacity: .45; cursor: not-allowed; }
 
+/* ---------- auth gate ---------- */
+.gate {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 30px;
+}
+
+.tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+
+.tab {
+  background: transparent;
+  color: var(--dim);
+  border: 1px solid var(--line);
+  padding: 9px 16px;
+  font-size: 12px;
+}
+.tab.on { background: #1a1722; color: var(--ink); border-color: #4a4360; }
+
+.gate-note { margin: 0 0 14px; font-size: 13px; color: var(--dim); }
+
+#authform { display: flex; flex-direction: column; gap: 10px; }
+
+input[type=password] {
+  width: 100%;
+  background: #0a0810;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  color: var(--ink);
+  font: inherit;
+  font-size: 15px;
+  padding: 11px 13px;
+  outline: none;
+  transition: border-color .16s;
+}
+input[type=password]:focus { border-color: #4a4360; }
+
+#authgo { align-self: flex-start; }
+
+.who {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--dim);
+  padding-bottom: 2px;
+}
+.who strong { color: var(--acid); font-weight: 700; }
+
+.link {
+  background: none;
+  color: var(--dim);
+  border: 0;
+  padding: 4px 0;
+  font-size: 12px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.link:hover { color: var(--hot); transform: none; }
+
 /* ---------- comments ---------- */
 .list { display: flex; flex-direction: column; gap: 12px; }
 
