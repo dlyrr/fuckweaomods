@@ -241,6 +241,8 @@ button:disabled { opacity: .45; cursor: not-allowed; }
   left: 50%;
   bottom: 24px;
   transform: translate(-50%, 140%);
+  opacity: 0;
+  visibility: hidden;
   background: var(--hot);
   color: #fff;
   font-size: 14px;
@@ -249,11 +251,11 @@ button:disabled { opacity: .45; cursor: not-allowed; }
   border-radius: 999px;
   max-width: min(92vw, 460px);
   text-align: center;
-  transition: transform .28s cubic-bezier(.2,.9,.3,1.2);
+  transition: transform .28s cubic-bezier(.2,.9,.3,1.2), opacity .2s, visibility .2s;
   z-index: 10;
   pointer-events: none;
 }
-.toast.show { transform: translate(-50%, 0); }
+.toast.show { transform: translate(-50%, 0); opacity: 1; visibility: visible; }
 .toast.ok { background: var(--acid); color: #12140a; }
 
 /* ---------- footer ---------- */
