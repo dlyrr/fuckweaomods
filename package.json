@@ -1,0 +1,10 @@
+{
+  "name": "fuckweaomods",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node test.mjs",
+    "dev": "wrangler pages dev",
+    "deploy": "wrangler pages deploy"
+  }
+}

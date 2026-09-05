@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>fuckweaomods.xyz</title>
+<meta name="description" content="A vent page about WEAO moderation. Unofficial. Not affiliated with anyone.">
+<meta name="color-scheme" content="dark">
+<meta property="og:title" content="fuckweaomods.xyz">
+<meta property="og:description" content="Somebody had to say it.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>&#128169;</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="bg" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="hero">
+  <p class="kicker">unofficial &middot; unaffiliated &middot; unhinged</p>
+  <h1 class="wordmark"><span>fuckweaomods</span><span class="tld">.xyz</span></h1>
+  <p class="sub">A containment zone for everyone who has ever been told their report was &ldquo;already known&rdquo; nine hours after it stopped being known.</p>
+  <a class="jump" href="#wall">read the wall &darr;</a>
+</header>
+
+<main>
+  <section class="manifesto" id="manifesto">
+    <h2 class="eyebrow">the manifesto</h2>
+
+    <p>Somewhere there is a spreadsheet, and on that spreadsheet is a column, and in that column is a word, and the word is <em>patched</em>. That word is wrong. It has been wrong for six hours. Forty thousand people are looking at it right now, and the only humans on earth who can change it are busy arguing in a staff channel about whether the person who pointed it out was rude enough to deserve a mute.</p>
+
+    <p>This is the whole complaint, honestly. Nobody expects a volunteer moderation team to be perfect. We expect them to be <em>reachable</em>. Instead the loop goes: the status is stale, someone politely says the status is stale, the reply is a canned line about not backseat-moderating, the status stays stale, and then twelve hours later it quietly flips with no note and no acknowledgement that anyone was ever right about anything. The information is a service. The service has a mood.</p>
+
+    <p>And the rules! The rules are wonderful. The rules are whatever the last message was. Ask a question &mdash; that&rsquo;s spam. Ask it again because nobody answered &mdash; that&rsquo;s ban evasion of a mute you didn&rsquo;t know you had. Post a screenshot proving the tracker is wrong &mdash; that&rsquo;s drama. Say nothing &mdash; congratulations, you have finally understood the community guidelines. The moderation policy has one actual rule and it is <em>do not make staff feel stupid in public</em>, and everything else is downstream of that.</p>
+
+    <p>So this page exists. It is not a campaign, it is not a raid, and it is not about any one person &mdash; nobody gets named here and nobody is going to. It&rsquo;s a wall. You type the thing you got muted for typing, it sits here, and nobody deletes it at 2am because they didn&rsquo;t like your tone. That&rsquo;s the entire feature set. Be funny, be mean about the <em>mods</em> as an institution, and leave real people&rsquo;s names, faces and addresses out of it &mdash; the moment this turns into a list of targets it becomes exactly the thing it&rsquo;s complaining about.</p>
+  </section>
+
+  <section class="wall" id="wall">
+    <h2 class="eyebrow">the wall</h2>
+
+    <form class="composer" id="composer" autocomplete="off">
+      <div class="row">
+        <input id="name" name="name" type="text" maxlength="24" placeholder="name (or leave it, you'll be anon)" aria-label="Your name">
+        <!-- honeypot: hidden from humans, irresistible to bots -->
+        <div class="hp" aria-hidden="true">
+          <label for="website">Website</label>
+          <input id="website" name="website" type="text" tabindex="-1" autocomplete="off">
+        </div>
+      </div>
+      <textarea id="body" name="body" maxlength="500" rows="3" required placeholder="what did they mute you for?" aria-label="Your comment"></textarea>
+      <div class="row bar">
+        <span class="count" id="count">0/500</span>
+        <button type="submit" id="send">post it</button>
+      </div>
+    </form>
+
+    <div id="list" class="list" aria-live="polite" aria-busy="true"></div>
+
+    <div class="more-wrap">
+      <button id="more" class="more" hidden>load more</button>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>Not affiliated with WEAO, whatexploitsareonline, its staff, or anyone in particular. Satire and opinion. Comments are user-submitted and do not reflect the views of this site.</p>
+  <p class="tiny">No accounts. No tracking. IPs are salted and hashed for rate limiting only, never stored raw.</p>
+</footer>
+
+<div id="toast" class="toast" role="status" aria-live="assertive"></div>
+
+<template id="tpl-comment">
+  <article class="c">
+    <div class="c-head"><span class="c-name"></span><time class="c-time"></time></div>
+    <p class="c-body"></p>
+  </article>
+</template>
+
+<script src="/app.js"></script>
+</body>
+</html>
