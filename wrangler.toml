@@ -5,5 +5,4 @@ pages_build_output_dir = "public"
 [[d1_databases]]
 binding = "DB"
 database_name = "fuckweaomods"
-# replace with the id printed by `wrangler d1 create fuckweaomods`
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "427f4feb-4ebf-48b2-af60-bc197b9fc567"
